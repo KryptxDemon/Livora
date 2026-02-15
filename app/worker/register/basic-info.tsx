@@ -11,32 +11,30 @@ import { SafeAreaView, ScrollView, StyleSheet, Text, View } from "react-native";
 const TOTAL_STEPS = 7;
 
 export default function BasicInfoScreen() {
-  const { t } = useLanguage();
+  const {t} = useLanguage();
   const [name, setName] = useState("");
   const [age, setAge] = useState("");
   const [gender, setGender] = useState("");
-  const [skillDescription, setSkillDescription] = useState("");
 
   const ageOptions = [
-    { value: "18-25", label: t("age18to25") },
-    { value: "26-35", label: t("age26to35") },
-    { value: "36-45", label: t("age36to45") },
-    { value: "46-55", label: t("age46to55") },
-    { value: "56+", label: t("age56plus") },
+    {value: "18-25", label: t("age18to25")},
+    {value: "26-35", label: t("age26to35")},
+    {value: "36-45", label: t("age36to45")},
+    {value: "46-55", label: t("age46to55")},
+    {value: "56+", label: t("age56plus")},
   ];
 
   const genderOptions = [
-    { value: "male", label: t("male") },
-    { value: "female", label: t("female") },
-    { value: "other", label: t("other") },
-    { value: "prefer_not", label: t("preferNotToSay") },
+    {value: "male", label: t("male")},
+    {value: "female", label: t("female")},
+    {value: "other", label: t("other")},
+    {value: "prefer_not", label: t("preferNotToSay")},
   ];
 
   const handleNext = async () => {
     await AsyncStorage.setItem("@livora_reg_name", name);
     await AsyncStorage.setItem("@livora_reg_age", age);
     await AsyncStorage.setItem("@livora_reg_gender", gender);
-    await AsyncStorage.setItem("@livora_reg_skill_info", skillDescription);
     router.push("/worker/register/skills");
   };
 
@@ -55,15 +53,14 @@ export default function BasicInfoScreen() {
           icon="arrow-back"
         />
         <Text style={styles.title}>{t("basicInfo")}</Text>
-        <View style={{ width: 80 }} />
+        <View style={{width: 80}} />
       </View>
 
       <ScrollView
         style={styles.content}
         contentContainerStyle={styles.scrollContent}
         keyboardShouldPersistTaps="handled"
-        showsVerticalScrollIndicator={false}
-      >
+        showsVerticalScrollIndicator={false}>
         <InputField
           label={t("name")}
           placeholder={t("enterName")}
@@ -86,16 +83,6 @@ export default function BasicInfoScreen() {
           options={genderOptions}
           value={gender}
           onSelect={setGender}
-        />
-
-        <InputField
-          label={t("skillDescription")}
-          placeholder={t("skillDescription")}
-          value={skillDescription}
-          onChangeText={setSkillDescription}
-          multiline
-          numberOfLines={4}
-          optional
         />
       </ScrollView>
 
