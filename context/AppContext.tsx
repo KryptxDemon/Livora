@@ -1,7 +1,13 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import React, {
+  createContext,
+  ReactNode,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 
-export type UserRole = 'worker' | 'employer' | null;
+export type UserRole = "worker" | "employer" | null;
 
 export interface WorkerProfile {
   id: string;
@@ -18,7 +24,7 @@ export interface WorkerProfile {
   phone: string;
   verified: boolean;
   rating: number;
-  badge: 'green' | 'yellow' | 'red';
+  badge: "green" | "yellow" | "red";
   createdAt: string;
 }
 
@@ -40,9 +46,9 @@ export interface Job {
   jobType: string;
   location: string;
   numberOfWorkers: number;
-  urgency: 'normal' | 'urgent';
+  urgency: "normal" | "urgent";
   payRange?: string;
-  status: 'open' | 'filled' | 'closed';
+  status: "open" | "filled" | "closed";
   createdAt: string;
 }
 
@@ -54,25 +60,25 @@ interface AppContextType {
   setIsFirstLaunch: (value: boolean) => Promise<void>;
   hasCompletedOnboarding: boolean;
   setHasCompletedOnboarding: (value: boolean) => Promise<void>;
-  
+
   // Worker state
   workerProfile: WorkerProfile | null;
   setWorkerProfile: (profile: WorkerProfile | null) => Promise<void>;
-  
+
   // Employer state
   employerProfile: EmployerProfile | null;
   setEmployerProfile: (profile: EmployerProfile | null) => Promise<void>;
-  
+
   // Jobs
   jobs: Job[];
   addJob: (job: Job) => Promise<void>;
-  
+
   // Mock workers for employer view
   mockWorkers: WorkerProfile[];
-  
+
   // Loading
   isLoading: boolean;
-  
+
   // Clear all data
   clearAllData: () => Promise<void>;
 }
@@ -80,94 +86,98 @@ interface AppContextType {
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 const KEYS = {
-  USER_ROLE: '@livora_user_role',
-  FIRST_LAUNCH: '@livora_first_launch',
-  ONBOARDING: '@livora_onboarding',
-  WORKER_PROFILE: '@livora_worker_profile',
-  EMPLOYER_PROFILE: '@livora_employer_profile',
-  JOBS: '@livora_jobs',
+  USER_ROLE: "@livora_user_role",
+  FIRST_LAUNCH: "@livora_first_launch",
+  ONBOARDING: "@livora_onboarding",
+  WORKER_PROFILE: "@livora_worker_profile",
+  EMPLOYER_PROFILE: "@livora_employer_profile",
+  JOBS: "@livora_jobs",
 };
 
 // Mock worker data for demo
 const generateMockWorkers = (): WorkerProfile[] => [
   {
-    id: '1',
-    name: 'রহিম মিয়া',
-    age: '26-35',
-    skills: ['electrician', 'plumber'],
-    experience: 'oneToThreeYears',
-    jobType: 'fullTime',
-    location: 'ঢাকা, মিরপুর',
-    phone: '01712345678',
+    id: "1",
+    name: "রহিম মিয়া",
+    age: "26-35",
+    skills: ["electrician", "plumber"],
+    experience: "oneToThreeYears",
+    jobType: "fullTime",
+    location: "ঢাকা, মিরপুর",
+    phone: "01712345678",
     verified: true,
     rating: 4.5,
-    badge: 'green',
+    badge: "green",
     createdAt: new Date().toISOString(),
   },
   {
-    id: '2',
-    name: 'করিম হোসেন',
-    age: '36-45',
-    skills: ['mason', 'carpenter'],
-    experience: 'threeYearsPlus',
-    jobType: 'daily',
-    location: 'ঢাকা, গুলশান',
-    phone: '01812345678',
+    id: "2",
+    name: "করিম হোসেন",
+    age: "36-45",
+    skills: ["mason", "carpenter"],
+    experience: "threeYearsPlus",
+    jobType: "daily",
+    location: "ঢাকা, গুলশান",
+    phone: "01812345678",
     verified: true,
     rating: 4.8,
-    badge: 'green',
+    badge: "green",
     createdAt: new Date().toISOString(),
   },
   {
-    id: '3',
-    name: 'সালমা বেগম',
-    age: '26-35',
-    skills: ['cleaner', 'cook'],
-    experience: 'oneToThreeYears',
-    jobType: 'partTime',
-    location: 'ঢাকা, ধানমন্ডি',
-    phone: '01912345678',
+    id: "3",
+    name: "সালমা বেগম",
+    age: "26-35",
+    skills: ["cleaner", "cook"],
+    experience: "oneToThreeYears",
+    jobType: "partTime",
+    location: "ঢাকা, ধানমন্ডি",
+    phone: "01912345678",
     verified: true,
     rating: 4.2,
-    badge: 'green',
+    badge: "green",
     createdAt: new Date().toISOString(),
   },
   {
-    id: '4',
-    name: 'জাহিদ আলী',
-    age: '18-25',
-    skills: ['driver'],
-    experience: 'lessThan1Year',
-    jobType: 'fullTime',
-    location: 'ঢাকা, বনানী',
-    phone: '01612345678',
+    id: "4",
+    name: "জাহিদ আলী",
+    age: "18-25",
+    skills: ["driver"],
+    experience: "lessThan1Year",
+    jobType: "fullTime",
+    location: "ঢাকা, বনানী",
+    phone: "01612345678",
     verified: true,
     rating: 3.8,
-    badge: 'yellow',
+    badge: "yellow",
     createdAt: new Date().toISOString(),
   },
   {
-    id: '5',
-    name: 'ফাতেমা আক্তার',
-    age: '26-35',
-    skills: ['cook', 'cleaner'],
-    experience: 'threeYearsPlus',
-    jobType: 'fullTime',
-    location: 'ঢাকা, উত্তরা',
-    phone: '01512345678',
+    id: "5",
+    name: "ফাতেমা আক্তার",
+    age: "26-35",
+    skills: ["cook", "cleaner"],
+    experience: "threeYearsPlus",
+    jobType: "fullTime",
+    location: "ঢাকা, উত্তরা",
+    phone: "01512345678",
     verified: true,
     rating: 4.9,
-    badge: 'green',
+    badge: "green",
     createdAt: new Date().toISOString(),
   },
 ];
 
-export function AppProvider({ children }: { children: ReactNode }) {
+export function AppProvider({children}: {children: ReactNode}) {
   const [userRole, setUserRoleState] = useState<UserRole>(null);
   const [isFirstLaunch, setIsFirstLaunchState] = useState(true);
-  const [hasCompletedOnboarding, setHasCompletedOnboardingState] = useState(false);
-  const [workerProfile, setWorkerProfileState] = useState<WorkerProfile | null>(null);
-  const [employerProfile, setEmployerProfileState] = useState<EmployerProfile | null>(null);
+  const [hasCompletedOnboarding, setHasCompletedOnboardingState] =
+    useState(false);
+  const [workerProfile, setWorkerProfileState] = useState<WorkerProfile | null>(
+    null,
+  );
+  const [employerProfile, setEmployerProfileState] =
+    useState<EmployerProfile | null>(null);
   const [jobs, setJobs] = useState<Job[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [mockWorkers] = useState<WorkerProfile[]>(generateMockWorkers());
@@ -178,25 +188,26 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const loadData = async () => {
     try {
-      const [role, firstLaunch, onboarding, worker, employer, savedJobs] = await Promise.all([
-        AsyncStorage.getItem(KEYS.USER_ROLE),
-        AsyncStorage.getItem(KEYS.FIRST_LAUNCH),
-        AsyncStorage.getItem(KEYS.ONBOARDING),
-        AsyncStorage.getItem(KEYS.WORKER_PROFILE),
-        AsyncStorage.getItem(KEYS.EMPLOYER_PROFILE),
-        AsyncStorage.getItem(KEYS.JOBS),
-      ]);
+      const [role, firstLaunch, onboarding, worker, employer, savedJobs] =
+        await Promise.all([
+          AsyncStorage.getItem(KEYS.USER_ROLE),
+          AsyncStorage.getItem(KEYS.FIRST_LAUNCH),
+          AsyncStorage.getItem(KEYS.ONBOARDING),
+          AsyncStorage.getItem(KEYS.WORKER_PROFILE),
+          AsyncStorage.getItem(KEYS.EMPLOYER_PROFILE),
+          AsyncStorage.getItem(KEYS.JOBS),
+        ]);
 
-      if (role === 'worker' || role === 'employer') {
+      if (role === "worker" || role === "employer") {
         setUserRoleState(role);
       }
-      setIsFirstLaunchState(firstLaunch !== 'false');
-      setHasCompletedOnboardingState(onboarding === 'true');
+      setIsFirstLaunchState(firstLaunch !== "false");
+      setHasCompletedOnboardingState(onboarding === "true");
       if (worker) setWorkerProfileState(JSON.parse(worker));
       if (employer) setEmployerProfileState(JSON.parse(employer));
       if (savedJobs) setJobs(JSON.parse(savedJobs));
     } catch (error) {
-      console.error('Error loading app data:', error);
+      console.error("Error loading app data:", error);
     } finally {
       setIsLoading(false);
     }
@@ -211,51 +222,57 @@ export function AppProvider({ children }: { children: ReactNode }) {
       }
       setUserRoleState(role);
     } catch (error) {
-      console.error('Error saving user role:', error);
+      console.error("Error saving user role:", error);
     }
   };
 
   const setIsFirstLaunch = async (value: boolean) => {
     try {
-      await AsyncStorage.setItem(KEYS.FIRST_LAUNCH, value ? 'true' : 'false');
+      await AsyncStorage.setItem(KEYS.FIRST_LAUNCH, value ? "true" : "false");
       setIsFirstLaunchState(value);
     } catch (error) {
-      console.error('Error saving first launch:', error);
+      console.error("Error saving first launch:", error);
     }
   };
 
   const setHasCompletedOnboarding = async (value: boolean) => {
     try {
-      await AsyncStorage.setItem(KEYS.ONBOARDING, value ? 'true' : 'false');
+      await AsyncStorage.setItem(KEYS.ONBOARDING, value ? "true" : "false");
       setHasCompletedOnboardingState(value);
     } catch (error) {
-      console.error('Error saving onboarding:', error);
+      console.error("Error saving onboarding:", error);
     }
   };
 
   const setWorkerProfile = async (profile: WorkerProfile | null) => {
     try {
       if (profile) {
-        await AsyncStorage.setItem(KEYS.WORKER_PROFILE, JSON.stringify(profile));
+        await AsyncStorage.setItem(
+          KEYS.WORKER_PROFILE,
+          JSON.stringify(profile),
+        );
       } else {
         await AsyncStorage.removeItem(KEYS.WORKER_PROFILE);
       }
       setWorkerProfileState(profile);
     } catch (error) {
-      console.error('Error saving worker profile:', error);
+      console.error("Error saving worker profile:", error);
     }
   };
 
   const setEmployerProfile = async (profile: EmployerProfile | null) => {
     try {
       if (profile) {
-        await AsyncStorage.setItem(KEYS.EMPLOYER_PROFILE, JSON.stringify(profile));
+        await AsyncStorage.setItem(
+          KEYS.EMPLOYER_PROFILE,
+          JSON.stringify(profile),
+        );
       } else {
         await AsyncStorage.removeItem(KEYS.EMPLOYER_PROFILE);
       }
       setEmployerProfileState(profile);
     } catch (error) {
-      console.error('Error saving employer profile:', error);
+      console.error("Error saving employer profile:", error);
     }
   };
 
@@ -265,7 +282,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       await AsyncStorage.setItem(KEYS.JOBS, JSON.stringify(newJobs));
       setJobs(newJobs);
     } catch (error) {
-      console.error('Error saving job:', error);
+      console.error("Error saving job:", error);
     }
   };
 
@@ -279,7 +296,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       setEmployerProfileState(null);
       setJobs([]);
     } catch (error) {
-      console.error('Error clearing data:', error);
+      console.error("Error clearing data:", error);
     }
   };
 
@@ -301,8 +318,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         mockWorkers,
         isLoading,
         clearAllData,
-      }}
-    >
+      }}>
       {children}
     </AppContext.Provider>
   );
@@ -311,7 +327,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
 export function useApp() {
   const context = useContext(AppContext);
   if (context === undefined) {
-    throw new Error('useApp must be used within an AppProvider');
+    throw new Error("useApp must be used within an AppProvider");
   }
   return context;
 }

@@ -163,6 +163,20 @@ export const translations = {
     submitComplaint: "অভিযোগ জমা দিন",
     complaintSubmitted: "অভিযোগ জমা হয়েছে",
 
+    // Customer Care
+    contactCustomerCare: "গ্রাহক সেবায় যোগাযোগ করুন",
+    customerCare: "গ্রাহক সেবা",
+    contactUs: "আমাদের সাথে যোগাযোগ করুন",
+    callUs: "আমাদের কল করুন",
+    whatsapp: "হোয়াটসঅ্যাপ",
+    email: "ইমেইল",
+    inquiryType: "অনুসন্ধানের ধরন",
+    technicalIssue: "প্রযুক্তিগত সমস্যা",
+    generalInquiry: "সাধারণ প্রশ্ন",
+    feedback: "প্রতিক্রিয়া",
+    enterYourMessage: "আপনার বার্তা লিখুন",
+    messageSent: "বার্তা পাঠানো হয়েছে",
+
     // Badges
     trusted: "বিশ্বস্ত",
     caution: "সতর্কতা",
@@ -350,6 +364,20 @@ export const translations = {
     fakeInfo: "Fake Information",
     submitComplaint: "Submit Complaint",
     complaintSubmitted: "Complaint Submitted",
+
+    // Customer Care
+    contactCustomerCare: "Contact Customer Care",
+    customerCare: "Customer Care",
+    contactUs: "Contact Us",
+    callUs: "Call Us",
+    whatsapp: "WhatsApp",
+    email: "Email",
+    inquiryType: "Inquiry Type",
+    technicalIssue: "Technical Issue",
+    generalInquiry: "General Inquiry",
+    feedback: "Feedback",
+    enterYourMessage: "Write your message here...",
+    messageSent: "Message Sent",
 
     // Badges
     trusted: "Trusted",

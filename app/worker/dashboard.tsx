@@ -1,14 +1,16 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity } from 'react-native';
 import { router } from 'expo-router';
 import { useLanguage } from '@/context/LanguageContext';
 import { useApp } from '@/context/AppContext';
 import { BigButton } from '@/components/ui/big-button';
+import CustomerCareModal from '@/components/customer-care-modal';
 import { Ionicons } from '@expo/vector-icons';
 
 export default function WorkerDashboardScreen() {
   const { t, language, setLanguage } = useLanguage();
   const { workerProfile, clearAllData } = useApp();
+  const [customerCareVisible, setCustomerCareVisible] = useState(false);
 
   const handleLogout = async () => {
     await clearAllData();
@@ -75,11 +77,14 @@ export default function WorkerDashboardScreen() {
             <Text style={styles.actionText}>{t('messages')}</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.actionCard}>
-            <View style={[styles.actionIcon, { backgroundColor: '#F3E5F5' }]}>
-              <Ionicons name="settings-outline" size={28} color="#7B1FA2" />
+          <TouchableOpacity 
+            style={styles.actionCard}
+            onPress={() => setCustomerCareVisible(true)}
+          >
+            <View style={[styles.actionIcon, { backgroundColor: '#FCE4EC' }]}>
+              <Ionicons name="headset-outline" size={28} color="#C2185B" />
             </View>
-            <Text style={styles.actionText}>{t('settings')}</Text>
+            <Text style={styles.actionText}>{t('contactCustomerCare')}</Text>
           </TouchableOpacity>
         </View>
 
@@ -124,6 +129,12 @@ export default function WorkerDashboardScreen() {
           />
         </View>
       </ScrollView>
+
+      <CustomerCareModal
+        visible={customerCareVisible}
+        onClose={() => setCustomerCareVisible(false)}
+        userRole="worker"
+      />
     </SafeAreaView>
   );
 }
