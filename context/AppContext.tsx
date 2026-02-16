@@ -35,7 +35,7 @@ export interface EmployerProfile {
   nidDocument?: string;
   tradeLicense?: string;
   verified: boolean;
-  package?: string;
+  wallet: number; // Balance for platform fee deductions
   smsCredits: number;
   createdAt: string;
 }
@@ -47,8 +47,13 @@ export interface Job {
   location: string;
   numberOfWorkers: number;
   urgency: "normal" | "urgent";
-  payRange?: string;
-  status: "open" | "filled" | "closed";
+  paymentAmount: number; // Payment offered to workers
+  platformFee: number; // 5% of paymentAmount
+  smsCost: number; // Cost of SMS notifications
+  status: "pending_confirmation" | "confirmed" | "completed" | "expired";
+  confirmedWorkerId?: string;
+  selectedCandidates: string[]; // Worker IDs selected for SMS
+  expiresAt: string; // When job posting expires
   createdAt: string;
 }
 
@@ -71,7 +76,10 @@ interface AppContextType {
 
   // Jobs
   jobs: Job[];
-  addJob: (job: Job) => Promise<void>;
+  createContractedJob: (job: Job) => Promise<boolean>;
+  confirmJobAcceptance: (jobId: string, workerId: string) => Promise<void>;
+  refundJobFee: (jobId: string) => Promise<void>;
+  updateJobStatus: (jobId: string, status: Job["status"]) => Promise<void>;
 
   // Mock workers for employer view
   mockWorkers: WorkerProfile[];
@@ -276,13 +284,110 @@ export function AppProvider({children}: {children: ReactNode}) {
     }
   };
 
-  const addJob = async (job: Job) => {
+  const createContractedJob = async (job: Job): Promise<boolean> => {
     try {
-      const newJobs = [...jobs, job];
-      await AsyncStorage.setItem(KEYS.JOBS, JSON.stringify(newJobs));
+      const platformFee = Math.round(job.paymentAmount * 0.05 * 100) / 100;
+      const smsCost = job.selectedCandidates.length * 0.5; // ৳0.50 per SMS
+
+      if (!employerProfile) {
+        console.error("No employer profile");
+        return false;
+      }
+
+      const totalDeduction = platformFee + smsCost;
+
+      // Check if employer has sufficient balance
+      if (employerProfile.wallet < totalDeduction) {
+        console.error("Insufficient wallet balance");
+        return false;
+      }
+
+      // Create job with calculated fees
+      const newJob: Job = {
+        ...job,
+        platformFee,
+        smsCost,
+        status: "pending_confirmation",
+      };
+
+      // Deduct fees from employer wallet
+      const updatedProfile: EmployerProfile = {
+        ...employerProfile,
+        wallet: employerProfile.wallet - totalDeduction,
+      };
+
+      // Save updated profile and job
+      const newJobs = [...jobs, newJob];
+      await Promise.all([
+        setEmployerProfileState(updatedProfile),
+        AsyncStorage.setItem(
+          KEYS.EMPLOYER_PROFILE,
+          JSON.stringify(updatedProfile),
+        ),
+        AsyncStorage.setItem(KEYS.JOBS, JSON.stringify(newJobs)),
+      ]);
+
       setJobs(newJobs);
+      return true;
     } catch (error) {
-      console.error("Error saving job:", error);
+      console.error("Error creating contracted job:", error);
+      return false;
+    }
+  };
+
+  const updateJobStatus = async (jobId: string, status: Job["status"]) => {
+    try {
+      const updatedJobs = jobs.map((job) =>
+        job.id === jobId ? { ...job, status } : job,
+      );
+      await AsyncStorage.setItem(KEYS.JOBS, JSON.stringify(updatedJobs));
+      setJobs(updatedJobs);
+    } catch (error) {
+      console.error("Error updating job status:", error);
+    }
+  };
+
+  const confirmJobAcceptance = async (jobId: string, workerId: string) => {
+    try {
+      const updatedJobs = jobs.map((job) =>
+        job.id === jobId
+          ? { ...job, status: "confirmed" as const, confirmedWorkerId: workerId }
+          : job,
+      );
+      await AsyncStorage.setItem(KEYS.JOBS, JSON.stringify(updatedJobs));
+      setJobs(updatedJobs);
+    } catch (error) {
+      console.error("Error confirming job acceptance:", error);
+    }
+  };
+
+  const refundJobFee = async (jobId: string) => {
+    try {
+      const job = jobs.find((j) => j.id === jobId);
+      if (job && employerProfile && job.status === "pending_confirmation") {
+        // Refund only platform fee, NOT SMS cost
+        const updatedProfile: EmployerProfile = {
+          ...employerProfile,
+          wallet: employerProfile.wallet + job.platformFee,
+        };
+
+        const updatedJobs = jobs.map((j) =>
+          j.id === jobId ? { ...j, status: "expired" as const } : j,
+        );
+
+        await Promise.all([
+          setEmployerProfileState(updatedProfile),
+          AsyncStorage.setItem(
+            KEYS.EMPLOYER_PROFILE,
+            JSON.stringify(updatedProfile),
+          ),
+          AsyncStorage.setItem(KEYS.JOBS, JSON.stringify(updatedJobs)),
+        ]);
+
+        setJobs(updatedJobs);
+      }
+    } catch (error) {
+      console.error("Error refunding job fee:", error);
     }
   };
 
@@ -314,7 +419,10 @@ export function AppProvider({children}: {children: ReactNode}) {
         employerProfile,
         setEmployerProfile,
         jobs,
-        addJob,
+        createContractedJob,
+        confirmJobAcceptance,
+        refundJobFee,
+        updateJobStatus,
         mockWorkers,
         isLoading,
         clearAllData,

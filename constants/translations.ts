@@ -137,6 +137,18 @@ export const translations = {
     payRange: "বেতন সীমা (ঐচ্ছিক)",
     postJobButton: "কাজ পোস্ট করুন",
     jobPosted: "কাজ পোস্ট হয়েছে!",
+    jobPaymentAmount: "কাজের অর্থ",
+    paymentAmount: "অর্থের পরিমান",
+    enterPaymentAmount: "অর্থ লিখুন",
+    enterJobPaymentAmount: "কাজের জন্য অর্থ লিখুন",
+    platformFee: "প্ল্যাটফর্ম ফি",
+    smsCost: "SMS খরচ",
+    totalDeduction: "মোট খরচ",
+    insufficientBalance: "আপনার ওয়ালেটে অপর্যাপ্ত ব্যালেন্স",
+
+    // Wallet
+    walletBalance: "ওয়ালেট ব্যালেন্স",
+    wallet: "ওয়ালেট",
 
     // Job Matching
     nearbyWorkers: "কাছের কর্মীরা",
@@ -181,6 +193,10 @@ export const translations = {
     trusted: "বিশ্বস্ত",
     caution: "সতর্কতা",
     restricted: "সীমাবদ্ধ",
+
+    // Dashboard Stats
+    activePosts: "সক্রিয় পোস্ট",
+    hired: "নিয়োগকৃত",
 
     // Common
     next: "পরবর্তী",
@@ -339,6 +355,18 @@ export const translations = {
     payRange: "Pay Range (optional)",
     postJobButton: "Post Job",
     jobPosted: "Job Posted!",
+    jobPaymentAmount: "Job Payment Amount",
+    paymentAmount: "Payment Amount",
+    enterPaymentAmount: "Enter payment amount",
+    enterJobPaymentAmount: "Enter payment amount for the job",
+    platformFee: "Platform Fee",
+    smsCost: "SMS Cost",
+    totalDeduction: "Total Deduction",
+    insufficientBalance: "Insufficient wallet balance",
+
+    // Wallet
+    walletBalance: "Wallet Balance",
+    wallet: "Wallet",
 
     // Job Matching
     nearbyWorkers: "Nearby Workers",
@@ -383,6 +411,10 @@ export const translations = {
     trusted: "Trusted",
     caution: "Caution",
     restricted: "Restricted",
+
+    // Dashboard Stats
+    activePosts: "Active Posts",
+    hired: "Hired",
 
     // Common
     next: "Next",
